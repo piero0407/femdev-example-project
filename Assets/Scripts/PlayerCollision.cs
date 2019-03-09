@@ -12,25 +12,39 @@ public class PlayerCollision : MonoBehaviour
 	[SerializeField] PlayerMovement movement;
 
 	[SerializeField] int maxHP = 10;
-	[SerializeField] float invulnerabilityFrames;
+	public int MaxHP
+	{
+		get { return maxHP; }
+		private set { maxHP = value; }
+	}
 
 	private int hp;
+	public int HP
+	{
+		get { return hp; }
+		private set { hp = value; }
+	}
+
+	[SerializeField] float invulnerabilityFrames;
 
 	private void Awake()
 	{
-		hp = maxHP;
+		HP = MaxHP;
 	}
 
 	private void OnTriggerStay2D(Collider2D other)
 	{
 		if (other.CompareTag("Enemy"))
 		{
-			hp--;
+			HP--;
+
 			collider.enabled = false;
 			movement.canMove = false;
 			animator.SetBool("Hit", true);
+
 			var direction = Mathf.Sign(transform.position.x - other.transform.position.x);
-			rigidbody.AddForce(new Vector2(direction, 1f).normalized * 2f, ForceMode2D.Impulse);
+			rigidbody.AddForce(new Vector2(direction, 1f).normalized * 5f, ForceMode2D.Impulse);
+
 			StartCoroutine(EnableCollider());
 		}
 	}
@@ -38,14 +52,19 @@ public class PlayerCollision : MonoBehaviour
 	IEnumerator EnableCollider()
 	{
 		yield return new WaitForSeconds(invulnerabilityFrames);
-		collider.enabled = true;
-		movement.canMove = true;
-		animator.SetBool("Hit", false);
-		if (hp <= 0)
+
+		if (HP <= 0)
 		{
+			animator.SetBool("Hit", false);
 			animator.SetTrigger("Death");
 			movement.canMove = false;
+			collider.enabled = false;
+		}
+		else
+		{
+			animator.SetBool("Hit", false);
+			collider.enabled = true;
+			movement.canMove = true;
 		}
 	}
-
 }
