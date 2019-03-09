@@ -25,7 +25,7 @@ public class PlayerCollision : MonoBehaviour
 		private set { hp = value; }
 	}
 
-	[SerializeField] float invulnerabilityFrames;
+	[SerializeField] float invencibleDuration;
 
 	private void Awake()
 	{
@@ -37,12 +37,14 @@ public class PlayerCollision : MonoBehaviour
 		if (other.CompareTag("Enemy"))
 		{
 			HP--;
+			Debug.Log("HP Left: " + HP);
 
 			collider.enabled = false;
 			movement.canMove = false;
 			animator.SetBool("Hit", true);
 
 			var direction = Mathf.Sign(transform.position.x - other.transform.position.x);
+			rigidbody.velocity = Vector2.zero;
 			rigidbody.AddForce(new Vector2(direction, 1f).normalized * 5f, ForceMode2D.Impulse);
 
 			StartCoroutine(EnableCollider());
@@ -51,7 +53,7 @@ public class PlayerCollision : MonoBehaviour
 
 	IEnumerator EnableCollider()
 	{
-		yield return new WaitForSeconds(invulnerabilityFrames);
+		yield return new WaitForSeconds(invencibleDuration);
 
 		if (HP <= 0)
 		{

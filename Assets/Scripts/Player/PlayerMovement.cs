@@ -8,30 +8,48 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] new Rigidbody2D rigidbody;
 	[SerializeField] Animator animator;
 	[SerializeField] float speed;
+	[SerializeField] float attackDuration;
 
 	[HideInInspector] public bool canMove = true;
+	public float direction;
 
 	private void Update()
 	{
+		direction = Input.GetAxis("Horizontal");
+
 		if (canMove)
 		{
-			Walking = Mathf.Abs(Direction) > 0;
+			Walking = Mathf.Abs(direction) > 0;
 
 			float newXScale;
 
-			if (Direction != 0)
+			if (direction != 0)
 			{
-				newXScale = Mathf.Sign(Direction) * Mathf.Abs(transform.localScale.x);
+				newXScale = Mathf.Sign(direction) * Mathf.Abs(transform.localScale.x);
 				transform.localScale = new Vector3(newXScale, transform.localScale.y, transform.localScale.z);
 			}
+
+			if (Input.GetAxis("Fire1") > 0 && !Jumping && !Falling)
+			{
+				canMove = false;
+				animator.SetBool("Attack", true);
+				StartCoroutine(AttackFinished());
+			}
 		}
+	}
+
+	IEnumerator AttackFinished()
+	{
+		yield return new WaitForSeconds(attackDuration);
+		animator.SetBool("Attack", false);
+		canMove = true;
 	}
 
 	private void FixedUpdate()
 	{
 		if (canMove)
 		{
-			rigidbody.velocity = new Vector2(Direction * speed, rigidbody.velocity.y);
+			rigidbody.velocity = new Vector2(direction * speed, rigidbody.velocity.y);
 
 			if (!Jumping && !Falling && Input.GetAxis("Jump") > 0f)
 			{
@@ -49,14 +67,6 @@ public class PlayerMovement : MonoBehaviour
 			{
 				Falling = false;
 			}
-		}
-	}
-
-	public float Direction
-	{
-		get
-		{
-			return Input.GetAxis("Horizontal");
 		}
 	}
 

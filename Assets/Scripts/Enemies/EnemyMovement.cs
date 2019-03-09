@@ -10,6 +10,8 @@ public class EnemyMovement : MonoBehaviour
 	[SerializeField] float speed;
 	[SerializeField] int direction;
 
+	bool canMove = true;
+
 	private void Awake()
 	{
 		animator.SetBool("Walk", true);
@@ -17,7 +19,8 @@ public class EnemyMovement : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		rigidbody.velocity = new Vector2(direction * speed, 0f);
+		if (canMove)
+			rigidbody.velocity = new Vector2(direction * speed, rigidbody.velocity.y);
 	}
 
 }
