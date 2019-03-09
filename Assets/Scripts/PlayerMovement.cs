@@ -30,7 +30,26 @@ public class PlayerMovement : MonoBehaviour
 	private void FixedUpdate()
 	{
 		if (canMove)
-			rigidbody.velocity = new Vector2(Direction * speed, 0f);
+		{
+			rigidbody.velocity = new Vector2(Direction * speed, rigidbody.velocity.y);
+
+			if (!Jumping && !Falling && Input.GetAxis("Jump") > 0f)
+			{
+				Jumping = true;
+				rigidbody.AddForce(new Vector2(0f, 10f), ForceMode2D.Impulse);
+			}
+
+			if (rigidbody.velocity.y < 0f)
+			{
+				Jumping = false;
+				Falling = true;
+			}
+
+			if (Falling && rigidbody.velocity.y == 0f)
+			{
+				Falling = false;
+			}
+		}
 	}
 
 	public float Direction
@@ -38,6 +57,34 @@ public class PlayerMovement : MonoBehaviour
 		get
 		{
 			return Input.GetAxis("Horizontal");
+		}
+	}
+
+	private bool falling;
+	public bool Falling
+	{
+		get { return falling; }
+		set
+		{
+			if (value != falling)
+			{
+				falling = value;
+				animator.SetBool("Fall", value);
+			}
+		}
+	}
+
+	private bool jumping;
+	public bool Jumping
+	{
+		get { return jumping; }
+		set
+		{
+			if (value != jumping)
+			{
+				jumping = value;
+				animator.SetBool("Jump", value);
+			}
 		}
 	}
 
@@ -54,5 +101,4 @@ public class PlayerMovement : MonoBehaviour
 			}
 		}
 	}
-
 }

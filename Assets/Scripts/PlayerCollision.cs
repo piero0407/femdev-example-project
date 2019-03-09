@@ -41,6 +41,11 @@ public class PlayerCollision : MonoBehaviour
 		collider.enabled = true;
 		movement.canMove = true;
 		animator.SetBool("Hit", false);
+		if (hp <= 0)
+		{
+			animator.SetTrigger("Death");
+			movement.canMove = false;
+		}
 	}
 
 }
