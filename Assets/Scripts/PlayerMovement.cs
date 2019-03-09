@@ -9,27 +9,28 @@ public class PlayerMovement : MonoBehaviour
 	[SerializeField] Animator animator;
 	[SerializeField] float speed;
 
-	private void Awake()
-	{
-
-	}
+	[HideInInspector] public bool canMove = true;
 
 	private void Update()
 	{
-		Walking = Mathf.Abs(Direction) > 0;
-
-		float newXScale;
-
-		if (Direction != 0)
+		if (canMove)
 		{
-			newXScale = Mathf.Sign(Direction) * Mathf.Abs(transform.localScale.x);
-			transform.localScale = new Vector3(newXScale, transform.localScale.y, transform.localScale.z);
+			Walking = Mathf.Abs(Direction) > 0;
+
+			float newXScale;
+
+			if (Direction != 0)
+			{
+				newXScale = Mathf.Sign(Direction) * Mathf.Abs(transform.localScale.x);
+				transform.localScale = new Vector3(newXScale, transform.localScale.y, transform.localScale.z);
+			}
 		}
 	}
 
 	private void FixedUpdate()
 	{
-		rigidbody.velocity = new Vector2(Direction * speed, 0f);
+		if (canMove)
+			rigidbody.velocity = new Vector2(Direction * speed, 0f);
 	}
 
 	public float Direction
